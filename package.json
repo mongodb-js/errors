@@ -1,5 +1,5 @@
 {
-  "name": "mongodb-errors",
+  "name": "mongodb-js-errors",
   "description": "Helpers for handling errors from the MongoDB driver.",
   "version": "0.0.1",
   "scripts": {
@@ -8,10 +8,10 @@
     "test": "mocha",
     "ci": "npm run check && npm test"
   },
-  "homepage": "http://github.com/mongodb-js/mongodb-errors",
+  "homepage": "http://github.com/mongodb-js/errors",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mongodb-js/mongodb-errors.git"
+    "url": "git://github.com/mongodb-js/errors.git"
   },
   "dependencies": {
     "boom": "^2.10.1",
