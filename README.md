@@ -5,6 +5,21 @@
 ## Example
 
 ```javascript
+var express = require('express');
+var app = module.exports = express();
+
+app.use(require('mongodb-errors/express'));
+app.use(function(err, req, res) {
+  var payload = err.output.payload;
+  res.format({
+    text: function() {
+      res.status(err.output.statusCode).send(payload.message);
+    },
+    json: function() {
+      res.status(err.output.statusCode).send(payload);
+    }
+  });
+});
 ```
 
 ## License
