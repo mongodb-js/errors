@@ -104,6 +104,8 @@ exports.decode = function mongodb_error_decode(err, fn) {
     err = boom.conflict('Collection already exists');
   } else if (/server .* sockets closed/.test(msg)) {
     err = boom.serverTimeout('Too many connections to MongoDB');
+  } else if (/operation exceeded time limit/.test(msg)) {
+    err = boom.serverTimeout('Operation exceeded the specified time limit');
   } else if (/connect ECONNREFUSED/.test(msg)) {
     err = boom.notFound('MongoDB not running');
   } else if (err.name === 'MongoError') {
