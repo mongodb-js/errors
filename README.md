@@ -26,7 +26,7 @@ app.use(function(err, req, res) {
 
 Apache 2.0
 
-[travis_img]: https://img.shields.io/travis/mongodb-js/mongodb-js-errors.svg
-[travis_url]: https://travis-ci.org/mongodb-js/mongodb-js-errors
+[travis_img]: https://img.shields.io/travis/mongodb-js/errors.svg
+[travis_url]: https://travis-ci.org/mongodb-js/errors
 [npm_img]: https://img.shields.io/npm/v/mongodb-js-errors.svg
 [npm_url]: https://npmjs.org/package/mongodb-js-errors
