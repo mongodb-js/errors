@@ -52,9 +52,11 @@ function translate(msg) {
   } else if (/Error from KDC: UNKNOWN_SERVER/.test(msg)) {
     return new Mapping(boom.serverTimeout, 'Invalid service name');
   } else if (/Matching credential/.test(msg)) {
-    return new Mapping(boom.serverTimeout, 'Invalid principal');
+    return new Mapping(boom.badRequest, 'Invalid principal');
   } else if (/self signed certificate in certificate chain/.test(msg)) {
-    return new Mapping(boom.serverTimeout, 'Invalid or missing certificate');
+    return new Mapping(boom.badRequest, 'Invalid or missing certificate');
+  } else if (/No credentials cache file found/.test(msg)) {
+    return new Mapping(boom.badRequest, 'Kerberos not detected on provided connection details');
   } else if (/socket hang up/.test(msg)) {
     return new Mapping(boom.serverTimeout, 'Socket could not establish connection to provided host and port');
   }
