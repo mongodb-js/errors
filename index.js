@@ -7,6 +7,61 @@ var boom = require('boom');
 var debug = require('debug')('scout-server:mongodb-error');
 
 /**
+ * A mapping of a boom function to a message.
+ *
+ * @param {Function} func - The boom function.
+ * @param {String} message - The message.
+ */
+function Mapping(func, message) {
+  this.func = func;
+  this.message = message;
+}
+
+/**
+ * Translate the message to a mapping.
+ *
+ * @param {String} msg - The message to translate.
+ *
+ * @returns {Mapping} The function/message mapping.
+ */
+function translate(msg) {
+  if (/connection closed/.test(msg)) {
+    return new Mapping(boom.serverTimeout, 'The connection to MongoDB was closed');
+  } else if (/cannot drop/.test(msg)) {
+    return new Mapping(boom.badRequest, 'This index cannot be destroyed');
+  } else if (/(auth failed|Authentication Failed)/.test(msg)) {
+    return new Mapping(boom.forbidden, 'Invalid auth credentials');
+  } else if (/(ECONNREFUSED|ENOTFOUND)/.test(msg)) {
+    return new Mapping(boom.notFound, 'MongoDB not running on the provided host and port');
+  } else if (/connection to \[.*\] timed out/.test(msg)) {
+    return new Mapping(boom.notFound, 'Could not connect to MongoDB because the conection timed out');
+  } else if (/failed to connect/.test(msg)) { // Host not reachable
+    return new Mapping(boom.notFound, 'Could not connect to MongoDB on the provided host and port');
+  } else if (/does not exist/.test(msg)) {
+    return new Mapping(boom.notFound, msg);
+  } else if (/already exists/.test(msg)) {
+    return new Mapping(boom.conflict, msg);
+  } else if (/pipeline element 0 is not an object/.test(msg)) {
+    return new Mapping(boom.badRequest, msg);
+  } else if (/(target namespace exists|already exists)/.test(msg)) {
+    return new Mapping(boom.conflict, 'Collection already exists');
+  } else if (/server .* sockets closed/.test(msg)) {
+    return new Mapping(boom.serverTimeout, 'The connection to MongoDB was closed');
+  } else if (/operation exceeded time limit/.test(msg)) {
+    return new Mapping(boom.serverTimeout, 'Operation exceeded the specified time limit');
+  } else if (/Error from KDC: UNKNOWN_SERVER/.test(msg)) {
+    return new Mapping(boom.serverTimeout, 'Invalid service name');
+  } else if (/Matching credential/.test(msg)) {
+    return new Mapping(boom.serverTimeout, 'Invalid principal');
+  } else if (/self signed certificate in certificate chain/.test(msg)) {
+    return new Mapping(boom.serverTimeout, 'Invalid or missing certificate');
+  } else if (/socket hang up/.test(msg)) {
+    return new Mapping(boom.serverTimeout, 'Socket could not establish connection to provided host and port');
+  }
+  return null;
+}
+
+/**
  * Is the error returned from the driver caused
  * by an access control restriction?
  *
@@ -79,46 +134,21 @@ exports.decode = function mongodb_error_decode(err, fn) {
 
   var msg = err.message || JSON.stringify(err);
   debug('decoding error message: `%s`', msg);
-  /**
-   * mongod won't let us connect anymore because we have too many idle
-   * connections to it.  Restart the process to flush and get back to
-   * a clean state.
-   */
-  if (/connection closed/.test(msg)) {
-    err = boom.serverTimeout('Too many connections to mongod');
-  } else if (/cannot drop/.test(msg)) {
-    err = boom.badRequest('This index cannot be destroyed');
-  } else if (/auth failed/.test(msg)) {
-    err = boom.forbidden('Invalid auth credentials');
-  } else if (/connection to \[.*\] timed out/.test(msg)) {
-    err = boom.notFound('Could not connect to MongoDB because the conection timed out');
-  } else if (/failed to connect/.test(msg)) { // Host not reachable
-    err = boom.notFound('Could not connect to MongoDB.  Is it running?');
-  } else if (/does not exist/.test(msg)) {
-    err = boom.notFound(msg);
-  } else if (/already exists/.test(msg)) {
-    err = boom.conflict(msg);
-  } else if (/pipeline element 0 is not an object/.test(msg)) {
-    err = boom.badRequest(msg);
-  } else if (/(target namespace exists|already exists)/.test(err.message)) {
-    err = boom.conflict('Collection already exists');
-  } else if (/server .* sockets closed/.test(msg)) {
-    err = boom.serverTimeout('Too many connections to MongoDB');
-  } else if (/operation exceeded time limit/.test(msg)) {
-    err = boom.serverTimeout('Operation exceeded the specified time limit');
-  } else if (/connect ECONNREFUSED/.test(msg)) {
-    err = boom.notFound('MongoDB not running');
-  } else if (err.name === 'MongoError') {
-    // All unknown driver errors to bubble up.
-    err = boom.badImplementation(err.message);
-    err.driver = true;
-  } else {
-    debug('does not look like a driver error');
-    process.nextTick(fn.bind(null, err));
-    return;
+  var mapping = translate(msg);
+
+  if (mapping === null) {
+    if (err.name === 'MongoError') {
+      // All unknown driver errors to bubble up.
+      mapping = new Mapping(boom.badImplementation, msg);
+    } else {
+      debug('does not look like a driver error');
+      process.nextTick(fn.bind(null, err));
+      return;
+    }
   }
-  debug('decoded error is: `%s`', err.message);
-  process.nextTick(fn.bind(null, err));
+  debug('decoded error is: `%s`', mapping.message);
+  process.nextTick(fn.bind(null, mapping.func.call(null, mapping.message)));
 };
 
 module.exports = exports;
+module.exports.translate = translate;

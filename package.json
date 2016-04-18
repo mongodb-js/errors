@@ -18,6 +18,7 @@
     "debug": "^2.2.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "eslint-config-mongodb-js": "^1.0.5",
     "mocha": "^2.3.3",
     "mongodb-js-fmt": "0.0.3",
