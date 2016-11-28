@@ -1,6 +1,7 @@
 var errors = require('../');
 var assert = require('assert');
 var expect = require('chai').expect;
+var boom = require('boom');
 
 describe('mongodb-errors', function() {
   it('should work', function() {
@@ -33,6 +34,14 @@ describe('mongodb-errors', function() {
     context('when the regex does not match', function() {
       it('returns null', function() {
         expect(errors.translate('not an error')).to.equal(null);
+      });
+    });
+
+    context('when the error is internal', function() {
+      it('returns a ServerError', function() {
+        var result = errors.translate('BSONObj size: 26360608 (0x1923B20) is invalid. Size must be between 0 and 16793600(16MB)');
+        expect(result.message).to.equal('Response from server was too large to process');
+        expect(result.func).to.equal(boom.badImplementation);
       });
     });
   });
