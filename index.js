@@ -1,4 +1,4 @@
-/* eslint camelcase:0, complexity: 1 */
+/* eslint camelcase:0, complexity: 0 */
 /**
  * MongoDB driver errors for humans.
  *
@@ -59,6 +59,8 @@ function translate(msg) {
     return new Mapping(boom.badRequest, 'Kerberos not detected on provided connection details');
   } else if (/socket hang up/.test(msg)) {
     return new Mapping(boom.serverTimeout, 'Socket could not establish connection to provided host and port');
+  } else if (/BSONObj size/.test(msg)) {
+    return new Mapping(boom.badImplementation, 'Response from server was too large to process');
   }
   return null;
 }
