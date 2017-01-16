@@ -61,6 +61,8 @@ function translate(msg) {
     return new Mapping(boom.serverTimeout, 'Socket could not establish connection to provided host and port');
   } else if (/BSONObj size/.test(msg)) {
     return new Mapping(boom.badImplementation, 'Response from server was too large to process');
+  } else if (/no such cmd: top/.test(msg)) {
+    return new Mapping(boom.badRequest, 'Top command is not available in mongos');
   }
   return null;
 }

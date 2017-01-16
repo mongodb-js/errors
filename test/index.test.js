@@ -44,5 +44,13 @@ describe('mongodb-errors', function() {
         expect(result.func).to.equal(boom.badImplementation);
       });
     });
+
+    context('when the command is not available', function() {
+      it('returns a Bad Request', function() {
+        var result = errors.translate('Command Top returned error: MongoError: no such cmd: top');
+        expect(result.message).to.equal('Top command is not available in mongos');
+        expect(result.func).to.equal(boom.badRequest);
+      });
+    });
   });
 });
