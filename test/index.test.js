@@ -22,6 +22,21 @@ describe('mongodb-errors', function() {
     });
   });
 
+  describe('#isNotAuthorized', function() {
+    it('should not match null', function() {
+      expect(errors.isNotAuthorized(null)).to.equal(false);
+    });
+    it('should not match `operation exceeded time limit` errors', function() {
+      var err = new Error('operation exceeded time limit');
+      expect(errors.isNotAuthorized(err)).to.equal(false);
+    });
+
+    it('should match `not authorized on <db> to execute command <cmdSpec>`', function() {
+      var err = new Error('not authorized on admin to execute command { getCmdLineOpts: 1 }');
+      expect(errors.isNotAuthorized(err)).to.equal(true);
+    });
+  });
+
   describe('#translate', function() {
     context('when the regex matches', function() {
       var expected = 'MongoDB not running on the provided host and port';
