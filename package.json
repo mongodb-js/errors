@@ -21,12 +21,8 @@
     "chai": "^3.5.0",
     "eslint-config-mongodb-js": "^2.2.0",
     "mocha": "^3.1.2",
-    "mongodb-js-fmt": "0.0.3",
-    "mongodb-js-precommit": "^0.2.4",
-    "pre-commit": "^1.1.2"
+    "mongodb-js-fmt": "^0.0.3",
+    "mongodb-js-precommit": "^0.2.4"
   },
-  "license": "Apache-2.0",
-  "precommit": [
-    "check"
-  ]
+  "license": "Apache-2.0"
 }
