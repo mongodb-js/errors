@@ -8,7 +8,7 @@
 var express = require('express');
 var app = module.exports = express();
 
-app.use(require('mongodb-errors/express'));
+app.use(require('mongodb-js-errors/express'));
 app.use(function(err, req, res) {
   var payload = err.output.payload;
   res.format({
