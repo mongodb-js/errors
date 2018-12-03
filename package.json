@@ -1,7 +1,7 @@
 {
   "name": "mongodb-js-errors",
   "description": "Helpers for handling errors from the MongoDB driver.",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "scripts": {
     "fmt": "mongodb-js-fmt ./*.js test/*.js",
     "check": "mongodb-js-precommit ./*.js test/*.js",
