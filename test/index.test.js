@@ -35,6 +35,11 @@ describe('mongodb-errors', function() {
       var err = new Error('not authorized on admin to execute command { getCmdLineOpts: 1 }');
       expect(errors.isNotAuthorized(err)).to.equal(true);
     });
+
+    it('should match `not allowed to do action`', function() {
+      var err = new Error('user is not allowed to do action [listCollections] on [test.]');
+      expect(errors.isNotAuthorized(err)).to.equal(true);
+    });
   });
 
   describe('#translate', function() {

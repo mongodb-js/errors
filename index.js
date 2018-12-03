@@ -86,7 +86,7 @@ exports.isNotAuthorized = function(err) {
     return false;
   }
   var msg = err.message || err.err || JSON.stringify(err);
-  return new RegExp('^not authorized').test(msg);
+  return new RegExp('not (authorized|allowed)').test(msg);
 };
 
 /**
