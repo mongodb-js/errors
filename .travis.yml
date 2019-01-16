@@ -2,9 +2,11 @@ sudo: false
 language: node_js
 node_js:
   - 6
-  - 7
-script: npm run-script ci
+  - 10
+  - 11
+script: 
+  - npm run check
+  - npm test
 cache:
-  yarn: true
   directories:
     - node_modules
