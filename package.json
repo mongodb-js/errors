@@ -20,7 +20,7 @@
     "chai": "^4.2.0",
     "eslint-config-mongodb-js": "^3.0.1",
     "mocha": "^5.2.0",
-    "mongodb-js-precommit": "^1.1.0"
+    "mongodb-js-precommit": "^2.0.0"
   },
   "license": "Apache-2.0"
 }
